@@ -36,8 +36,10 @@ for (let t = 0; t < Math.PI * 2; t += 0.18) {
 }
 
 function handleMove(x, y) {
-  mouse.x = x;
-  mouse.y = y;
+  const rect = canvas.getBoundingClientRect();
+
+  mouse.x = x - rect.left;
+  mouse.y = y - rect.top;
 
   if (isPressing) {
     particles.push({
@@ -58,29 +60,20 @@ function handleMove(x, y) {
   }
 }
 
-// 🖱 Desktop
-canvas.addEventListener("mousemove", (e) => {
+canvas.addEventListener("pointerdown", (e) => {
+  isPressing = true;
   handleMove(e.clientX, e.clientY);
 });
 
-canvas.addEventListener("mousedown", () => isPressing = true);
-canvas.addEventListener("mouseup", () => isPressing = false);
+canvas.addEventListener("pointermove", (e) => {
+  handleMove(e.clientX, e.clientY);
+});
 
-// 📱 Mobile
-canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  isPressing = true;
-  const touch = e.touches[0];
-  handleMove(touch.clientX, touch.clientY);
-}, { passive: false });
+canvas.addEventListener("pointerup", () => {
+  isPressing = false;
+});
 
-canvas.addEventListener("touchmove", (e) => {
-  e.preventDefault();
-  const touch = e.touches[0];
-  handleMove(touch.clientX, touch.clientY);
-}, { passive: false });
-
-canvas.addEventListener("touchend", () => {
+canvas.addEventListener("pointercancel", () => {
   isPressing = false;
 });
 
